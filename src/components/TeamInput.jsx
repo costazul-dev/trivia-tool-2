@@ -1,7 +1,7 @@
 // src/components/TeamInput.jsx
 import React from 'react';
 
-function TeamInput({ teams, updateTeam }) {
+function TeamInput({ teams, updateTeam, currentRound }) {
   return (
     <div>
       {teams.map((team, index) => (
@@ -14,10 +14,19 @@ function TeamInput({ teams, updateTeam }) {
           />
           <input
             type="number"
-            placeholder="Score"
-            value={team.score}
-            onChange={(e) => updateTeam(index, 'score', e.target.value)}
+            placeholder="Round 1 Score"
+            value={team.round1}
+            onChange={(e) => updateTeam(index, 'round1', e.target.value)}
+            disabled={currentRound !== 1}
           />
+          {currentRound === 2 && (
+            <input
+              type="number"
+              placeholder="Round 2 Score"
+              value={team.round2}
+              onChange={(e) => updateTeam(index, 'round2', e.target.value)}
+            />
+          )}
         </div>
       ))}
     </div>
