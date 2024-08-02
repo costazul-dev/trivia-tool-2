@@ -67,3 +67,37 @@ ul {
 li {
   margin: 5px 0;
 }
+
+/* src/App.css */
+
+/* ... (keep your existing styles) ... */
+
+.team-control-buttons {
+  margin: 10px 0;
+}
+
+.add-team, .remove-team {
+  font-size: 24px;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: none;
+  color: white;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 5px;
+  cursor: pointer;
+}
+
+.add-team {
+  background-color: #4CAF50; /* Green */
+}
+
+.remove-team {
+  background-color: #f44336; /* Red */
+}
+
+.add-team:hover, .remove-team:hover {
+  opacity: 0.8;
+}
