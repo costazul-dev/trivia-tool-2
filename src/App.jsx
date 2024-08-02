@@ -1,29 +1,38 @@
 // src/App.jsx
 import React, { useState } from 'react';
+import InitialTeamSetup from './components/InitialTeamSetup';
 import TeamInput from './components/TeamInput';
 import RankingList from './components/RankingList';
 import DownloadCSV from './components/DownloadCSV';
 import './App.css';
 
 function App() {
-  const [teams, setTeams] = useState([{ name: '', round1: '', round2: '' }]);
+  const [teams, setTeams] = useState([]);
   const [rankings, setRankings] = useState([]);
   const [currentRound, setCurrentRound] = useState(1);
+  const [setupComplete, setSetupComplete] = useState(false);
+
+  const setupInitialTeams = (numberOfTeams) => {
+    const initialTeams = Array(numberOfTeams).fill().map(() => ({ name: '', round1: '', round2: '' }));
+    setTeams(initialTeams);
+    setSetupComplete(true);
+  };
 
   const addTeam = () => {
     setTeams([...teams, { name: '', round1: '', round2: '' }]);
   };
 
+  const removeTeam = () => {
+    if (teams.length > 1) {
+      setTeams(teams.slice(0, -1));
+    }
+  };
+
   const updateTeam = (index, field, value) => {
     const updatedTeams = [...teams];
-    // Only allow updates to round1 if we're still in round 1
     if (field === 'round1' && currentRound !== 1) return;
     updatedTeams[index][field] = value;
     setTeams(updatedTeams);
-
-    if (index === teams.length - 1 && field === 'name') {
-      addTeam();
-    }
   };
 
   const rankTeams = () => {
@@ -66,19 +75,29 @@ function App() {
   return (
     <div className="App">
       <h1>Trivia Score Tracker</h1>
-      <TeamInput 
-        teams={teams} 
-        updateTeam={updateTeam} 
-        currentRound={currentRound}
-      />
-      <button onClick={rankTeams}>Rank Teams</button>
-      {currentRound === 1 && rankings.length > 0 && (
-        <button onClick={startRound2}>Start Round 2</button>
-      )}
-      {rankings.length > 0 && (
+      {!setupComplete ? (
+        <InitialTeamSetup onSetupComplete={setupInitialTeams} />
+      ) : (
         <>
-          <RankingList rankings={rankings} currentRound={currentRound} />
-          <DownloadCSV data={rankings} currentRound={currentRound} />
+          <TeamInput 
+            teams={teams} 
+            updateTeam={updateTeam} 
+            currentRound={currentRound}
+          />
+          <div className="team-control-buttons">
+            <button onClick={addTeam} className="add-team">&#43;</button>
+            <button onClick={removeTeam} className="remove-team">&#8722;</button>
+          </div>
+          <button onClick={rankTeams}>Rank Teams</button>
+          {currentRound === 1 && rankings.length > 0 && (
+            <button onClick={startRound2}>Start Round 2</button>
+          )}
+          {rankings.length > 0 && (
+            <>
+              <RankingList rankings={rankings} currentRound={currentRound} />
+              <DownloadCSV data={rankings} currentRound={currentRound} />
+            </>
+          )}
         </>
       )}
     </div>
