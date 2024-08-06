@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import InitialTeamSetup from './components/InitialTeamSetup';
 import TeamInput from './components/TeamInput';
-import RankingList from './components/RankingList';
+import RankingList from './components/RankingList/RankingList';
 import DownloadCSV from './components/DownloadCSV';
 import './App.css';
 
@@ -61,7 +61,9 @@ function App() {
         ...team,
         rank: currentRank,
         tied: teamsAtCurrentRank > 1,
-        totalScore
+        totalScore,
+        round1: parseInt(team.round1 || 0),
+        round2: parseInt(team.round2 || 0)
       };
     });
 
@@ -74,7 +76,7 @@ function App() {
 
   return (
     <div className="App">
-      <h1>Trivia Score Tracker</h1>
+      <h1>trivia-tool-2 beta 🎙️</h1>
       {!setupComplete ? (
         <InitialTeamSetup onSetupComplete={setupInitialTeams} />
       ) : (
