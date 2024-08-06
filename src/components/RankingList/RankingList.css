@@ -1,0 +1,21 @@
+/* src/components/RankingList.css */
+.rankings-container {
+    margin-top: 20px;
+  }
+  
+  .rankings-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+  }
+  
+  .rankings-table th,
+  .rankings-table td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+  }
+  
+  .rankings-table th {
+    font-weight: bold;
+  }
