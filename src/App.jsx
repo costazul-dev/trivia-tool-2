@@ -38,8 +38,8 @@ function App() {
   const rankTeams = () => {
     const validTeams = teams.filter(team => team.name && (team.round1 || team.round2));
     const sortedTeams = validTeams.sort((a, b) => {
-      const scoreA = parseInt(a.round1 || 0) + parseInt(a.round2 || 0);
-      const scoreB = parseInt(b.round1 || 0) + parseInt(b.round2 || 0);
+      const scoreA = parseFloat(a.round1 || 0) + parseFloat(a.round2 || 0);
+      const scoreB = parseFloat(b.round1 || 0) + parseFloat(b.round2 || 0);
       return scoreB - scoreA;
     });
     
@@ -48,7 +48,7 @@ function App() {
     let teamsAtCurrentRank = 0;
 
     const rankedTeams = sortedTeams.map((team, index) => {
-      const totalScore = parseInt(team.round1 || 0) + parseInt(team.round2 || 0);
+      const totalScore = parseFloat(team.round1 || 0) + parseFloat(team.round2 || 0);
       if (totalScore !== currentScore) {
         currentRank = index + 1;
         currentScore = totalScore;
@@ -62,8 +62,8 @@ function App() {
         rank: currentRank,
         tied: teamsAtCurrentRank > 1,
         totalScore,
-        round1: parseInt(team.round1 || 0),
-        round2: parseInt(team.round2 || 0)
+        round1: parseFloat(team.round1 || 0),
+        round2: parseFloat(team.round2 || 0)
       };
     });
 
