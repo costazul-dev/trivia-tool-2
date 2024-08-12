@@ -14,6 +14,7 @@ function TeamInput({ teams, updateTeam, currentRound }) {
           />
           <input
             type="number"
+            step="0.1"
             placeholder="Round 1 Score"
             value={team.round1}
             onChange={(e) => updateTeam(index, 'round1', e.target.value)}
@@ -22,6 +23,7 @@ function TeamInput({ teams, updateTeam, currentRound }) {
           {currentRound === 2 && (
             <input
               type="number"
+              step="0.1"
               placeholder="Round 2 Score"
               value={team.round2}
               onChange={(e) => updateTeam(index, 'round2', e.target.value)}

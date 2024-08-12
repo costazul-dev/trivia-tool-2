@@ -17,7 +17,7 @@ function RankingList({ rankings, currentRound }) {
           <tr key={index}>
             <td>{team.rank}</td>
             <td>{team.name}</td>
-            <td>{round === 1 ? team.round1 : team.totalScore}</td>
+            <td>{round === 1 ? team.round1.toFixed(1) : team.totalScore.toFixed(1)}</td>
           </tr>
         ))}
       </tbody>
