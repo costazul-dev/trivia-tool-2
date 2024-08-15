@@ -105,7 +105,7 @@ function App() {
 
   return (
     <div className="App">
-      <h1>trivia-tool-2 beta 🎙️</h1>
+      <h1>trivia-tool-2 v1.2 🎙️</h1>
       {!setupComplete ? (
         <InitialTeamSetup onSetupComplete={setupInitialTeams} />
       ) : (
