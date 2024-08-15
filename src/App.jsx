@@ -8,7 +8,8 @@ import './App.css';
 
 function App() {
   const [teams, setTeams] = useState([]);
-  const [rankings, setRankings] = useState([]);
+  const [round1Rankings, setRound1Rankings] = useState([]);
+  const [round2Rankings, setRound2Rankings] = useState([]);
   const [currentRound, setCurrentRound] = useState(1);
   const [setupComplete, setSetupComplete] = useState(false);
 
@@ -36,38 +37,66 @@ function App() {
   };
 
   const rankTeams = () => {
-    const validTeams = teams.filter(team => team.name && (team.round1 || team.round2));
-    const sortedTeams = validTeams.sort((a, b) => {
-      const scoreA = parseFloat(a.round1 || 0) + parseFloat(a.round2 || 0);
-      const scoreB = parseFloat(b.round1 || 0) + parseFloat(b.round2 || 0);
-      return scoreB - scoreA;
-    });
-    
-    let currentRank = 1;
-    let currentScore = null;
-    let teamsAtCurrentRank = 0;
+    if (currentRound === 1) {
+      const validTeams = teams.filter(team => team.name && team.round1);
+      const sortedTeams = validTeams.sort((a, b) => parseFloat(b.round1) - parseFloat(a.round1));
 
-    const rankedTeams = sortedTeams.map((team, index) => {
-      const totalScore = parseFloat(team.round1 || 0) + parseFloat(team.round2 || 0);
-      if (totalScore !== currentScore) {
-        currentRank = index + 1;
-        currentScore = totalScore;
-        teamsAtCurrentRank = 1;
-      } else {
-        teamsAtCurrentRank++;
-      }
+      let currentRank = 1;
+      let currentScore = null;
+      let teamsAtCurrentRank = 0;
 
-      return {
-        ...team,
-        rank: currentRank,
-        tied: teamsAtCurrentRank > 1,
-        totalScore,
-        round1: parseFloat(team.round1 || 0),
-        round2: parseFloat(team.round2 || 0)
-      };
-    });
+      const rankedTeams = sortedTeams.map((team, index) => {
+        const score = parseFloat(team.round1);
+        if (score !== currentScore) {
+          currentRank = index + 1;
+          currentScore = score;
+          teamsAtCurrentRank = 1;
+        } else {
+          teamsAtCurrentRank++;
+        }
 
-    setRankings(rankedTeams);
+        return {
+          ...team,
+          rank: currentRank,
+          tied: teamsAtCurrentRank > 1,
+          score: score
+        };
+      });
+
+      setRound1Rankings(rankedTeams);
+    } else {
+      const validTeams = teams.filter(team => team.name && (team.round1 || team.round2));
+      const sortedTeams = validTeams.sort((a, b) => {
+        const scoreA = parseFloat(a.round1 || 0) + parseFloat(a.round2 || 0);
+        const scoreB = parseFloat(b.round1 || 0) + parseFloat(b.round2 || 0);
+        return scoreB - scoreA;
+      });
+
+      let currentRank = 1;
+      let currentScore = null;
+      let teamsAtCurrentRank = 0;
+
+      const rankedTeams = sortedTeams.map((team, index) => {
+        const totalScore = parseFloat(team.round1 || 0) + parseFloat(team.round2 || 0);
+        if (totalScore !== currentScore) {
+          currentRank = index + 1;
+          currentScore = totalScore;
+          teamsAtCurrentRank = 1;
+        } else {
+          teamsAtCurrentRank++;
+        }
+
+        return {
+          ...team,
+          rank: currentRank,
+          tied: teamsAtCurrentRank > 1,
+          score: parseFloat(team.round2 || 0),
+          totalScore
+        };
+      });
+
+      setRound2Rankings(rankedTeams);
+    }
   };
 
   const startRound2 = () => {
@@ -91,13 +120,21 @@ function App() {
             <button onClick={removeTeam} className="remove-team">&#8722;</button>
           </div>
           <button onClick={rankTeams}>Rank Teams</button>
-          {currentRound === 1 && rankings.length > 0 && (
-            <button onClick={startRound2}>Start Round 2</button>
-          )}
-          {rankings.length > 0 && (
+            {currentRound === 1 && round1Rankings.length > 0 && (
+              <button onClick={startRound2}>Start Round 2</button>
+            )}
+            {(round1Rankings.length > 0 || round2Rankings.length > 0) && (
             <>
-              <RankingList rankings={rankings} currentRound={currentRound} />
-              <DownloadCSV data={rankings} currentRound={currentRound} />
+                <RankingList
+                  round1Rankings={round1Rankings}
+                  round2Rankings={round2Rankings}
+                  currentRound={currentRound}
+                />
+                <DownloadCSV
+                  round1Data={round1Rankings}
+                  round2Data={round2Rankings}
+                  currentRound={currentRound}
+                />
             </>
           )}
         </>
