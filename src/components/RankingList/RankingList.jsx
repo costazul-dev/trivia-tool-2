@@ -2,22 +2,43 @@
 import React from 'react';
 import './RankingList.css';
 
-function RankingList({ rankings, currentRound }) {
-  const renderTable = (round) => (
+function RankingList({ round1Rankings, round2Rankings, currentRound }) {
+  const renderRound1Table = () => (
     <table className="rankings-table">
       <thead>
         <tr>
           <th>Rank</th>
-          <th>Team Name</th>
+          <th>Team</th>
           <th>Points</th>
         </tr>
       </thead>
       <tbody>
-        {rankings.map((team, index) => (
+        {round1Rankings.map((team, index) => (
           <tr key={index}>
             <td>{team.rank}</td>
             <td>{team.name}</td>
-            <td>{round === 1 ? team.round1.toFixed(1) : team.totalScore.toFixed(1)}</td>
+            <td>{team.score.toFixed(1)}</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  );
+
+  const renderRound2Table = () => (
+    <table className="rankings-table">
+      <thead>
+        <tr>
+          <th>Rank</th>
+          <th>Team</th>
+          <th>Points</th>
+        </tr>
+      </thead>
+      <tbody>
+        {round2Rankings.map((team, index) => (
+          <tr key={index}>
+            <td>{team.rank}</td>
+            <td>{team.name}</td>
+            <td>{team.totalScore.toFixed(1)}</td>
           </tr>
         ))}
       </tbody>
@@ -26,12 +47,12 @@ function RankingList({ rankings, currentRound }) {
 
   return (
     <div className="rankings-container">
-      <h2>Rankings</h2>
-      {renderTable(1)}
+      <h2>Round 1 Rankings</h2>
+      {renderRound1Table()}
       {currentRound === 2 && (
         <>
-          <h3>Round 2 Totals</h3>
-          {renderTable(2)}
+          <h2>Round 2 Rankings</h2>
+          {renderRound2Table()}
         </>
       )}
     </div>
