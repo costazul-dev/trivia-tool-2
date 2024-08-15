@@ -1,22 +1,22 @@
 // src/components/DownloadCSV.jsx
 import React from 'react';
 
-function DownloadCSV({ data, currentRound }) {
+function DownloadCSV({ round1Data, round2Data, currentRound }) {
   const generateCSV = () => {
-    const headers = currentRound === 1 
-      ? "Rank,Team Name,Round 1 Score,Total Score,Tied\n"
-      : "Rank,Team Name,Round 1 Score,Round 2 Score,Total Score,Tied\n";
+    let csvContent = "data:text/csv;charset=utf-8,";
 
-    const csvContent = "data:text/csv;charset=utf-8," 
-      + headers
-      + data.map(team => 
-          `${team.rank},${team.name},${team.round1 || 0},${currentRound === 2 ? `${team.round2 || 0},` : ''}${team.totalScore},${team.tied ? 'Yes' : 'No'}`
-        ).join("\n");
-    
+    csvContent += "Round 1\nRank,Team Name,Score\n";
+    csvContent += round1Data.map(team => `${team.rank},${team.name},${team.score}`).join("\n");
+
+    if (currentRound === 2) {
+      csvContent += "\n\nRound 2\nRank,Team Name,Round 2 Score,Total Score\n";
+      csvContent += round2Data.map(team => `${team.rank},${team.name},${team.score},${team.totalScore}`).join("\n");
+    }
+
     const encodedUri = encodeURI(csvContent);
     const link = document.createElement("a");
     link.setAttribute("href", encodedUri);
-    link.setAttribute("download", `trivia_rankings_round_${currentRound}.csv`);
+    link.setAttribute("download", "trivia_rankings.csv");
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
