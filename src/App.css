@@ -101,3 +101,56 @@ li {
 .add-team:hover, .remove-team:hover {
   opacity: 0.8;
 }
+
+/* Dictate Button */
+.dictate-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 20px;
+  font-size: 16px;
+  font-weight: 600;
+  border: 2px solid #6c63ff;
+  border-radius: 8px;
+  background: #6c63ff;
+  color: #fff;
+  cursor: pointer;
+  transition: background 0.2s, opacity 0.2s;
+}
+
+.dictate-btn:hover:not(:disabled) {
+  background: #5a52d5;
+}
+
+.dictate-btn.recording {
+  background: #e53935;
+  border-color: #e53935;
+}
+
+.dictate-btn.recording:hover {
+  background: #c62828;
+}
+
+.dictate-btn.processing {
+  background: #999;
+  border-color: #999;
+  cursor: not-allowed;
+}
+
+.mic-icon {
+  font-size: 18px;
+}
+
+.recording-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #fff;
+  display: inline-block;
+  animation: pulse-dot 1s ease-in-out infinite;
+}
+
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.4; transform: scale(0.8); }
+}
