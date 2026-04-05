@@ -4,6 +4,7 @@ import InitialTeamSetup from './components/InitialTeamSetup';
 import TeamInput from './components/TeamInput';
 import RankingList from './components/RankingList/RankingList';
 import DownloadCSV from './components/DownloadCSV';
+import DictateButton from './components/DictateButton';
 import './App.css';
 
 function App() {
@@ -119,6 +120,9 @@ function App() {
             <button onClick={addTeam} className="add-team">&#43;</button>
             <button onClick={removeTeam} className="remove-team">&#8722;</button>
           </div>
+          <DictateButton onRecordingComplete={(blob) => {
+            console.log('Recording complete:', blob.type, blob.size, 'bytes');
+          }} />
           <button onClick={rankTeams}>Rank Teams</button>
             {currentRound === 1 && round1Rankings.length > 0 && (
               <button onClick={startRound2}>Start Round 2</button>
