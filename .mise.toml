@@ -1,0 +1,14 @@
+[tools]
+node = "22"
+
+[tasks.server]
+description = "Start the Express API server"
+run = "node server/index.js"
+
+[tasks.client]
+description = "Start the Vite dev server"
+run = "npx vite"
+
+[tasks.dev]
+description = "Run both client and Vite dev servers concurrently"
+depends = ["server", "client"]
