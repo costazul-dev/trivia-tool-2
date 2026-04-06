@@ -16,8 +16,9 @@ router.post("/", upload.single("audio"), async (req, res) => {
     return res.status(400).json({ error: "No audio file provided" });
   }
 
+  console.log("[transcribe] Received file:", req.file.originalname, req.file.mimetype, req.file.size, "bytes");
   try {
-    const file = new File([req.file.buffer], req.file.originalname, {
+    const file = await OpenAI.toFile(req.file.buffer, req.file.originalname, {
       type: req.file.mimetype,
     });
 
@@ -26,6 +27,7 @@ router.post("/", upload.single("audio"), async (req, res) => {
       file,
     });
 
+    console.log("[transcribe] Result:", text);
     res.json({ transcript: text });
   } catch (err) {
     console.error("Transcription failed:", err.message);

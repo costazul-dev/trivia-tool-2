@@ -35,6 +35,7 @@ router.post("/", async (req, res) => {
     return res.status(400).json({ error: "round is required and must be a number" });
   }
 
+  console.log("[parse] Round:", round, "Transcript:", transcript.slice(0, 100));
   try {
     const message = await getClient().messages.create({
       model: "claude-haiku-4-5-20251001",
@@ -52,6 +53,7 @@ router.post("/", async (req, res) => {
       return res.status(502).json({ error: "Unexpected response format from Claude" });
     }
 
+    console.log("[parse] Result:", JSON.stringify(parsed));
     res.json(parsed);
   } catch (err) {
     console.error("Parse failed:", err.message);
