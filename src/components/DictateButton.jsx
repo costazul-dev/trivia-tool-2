@@ -55,10 +55,9 @@ function DictateButton({ onRecordingComplete }) {
         streamRef.current = null;
 
         setState('processing');
-        setTimeout(() => {
-          onRecordingComplete(blob);
+        Promise.resolve(onRecordingComplete(blob)).finally(() => {
           setState('idle');
-        }, 600);
+        });
       };
 
       recorder.start();

@@ -5,6 +5,7 @@ import TeamInput from './components/TeamInput';
 import RankingList from './components/RankingList/RankingList';
 import DownloadCSV from './components/DownloadCSV';
 import DictateButton from './components/DictateButton';
+import { processDictation } from './services/dictation';
 import './App.css';
 
 function App() {
@@ -13,6 +14,28 @@ function App() {
   const [round2Rankings, setRound2Rankings] = useState([]);
   const [currentRound, setCurrentRound] = useState(1);
   const [setupComplete, setSetupComplete] = useState(false);
+  const [isDictating, setIsDictating] = useState(false);
+  const [dictationError, setDictationError] = useState(null);
+
+  const handleDictationComplete = async (audioBlob) => {
+    setIsDictating(true);
+    setDictationError(null);
+    try {
+      const results = await processDictation(audioBlob, currentRound, []);
+      const newTeams = results.map(({ name, score }) => ({
+        name,
+        round1: String(score),
+        round2: '',
+      }));
+      setTeams(newTeams);
+      setSetupComplete(true);
+    } catch (err) {
+      console.error('Dictation failed:', err);
+      setDictationError(err.message);
+    } finally {
+      setIsDictating(false);
+    }
+  };
 
   const setupInitialTeams = (numberOfTeams) => {
     const initialTeams = Array(numberOfTeams).fill().map(() => ({ name: '', round1: '', round2: '' }));
@@ -108,7 +131,17 @@ function App() {
     <div className="App">
       <h1>trivia-tool-2 v1.2 🎙️</h1>
       {!setupComplete ? (
-        <InitialTeamSetup onSetupComplete={setupInitialTeams} />
+        <div>
+          <InitialTeamSetup onSetupComplete={setupInitialTeams} />
+          {currentRound === 1 && (
+            <div className="dictate-section">
+              <p>Or dictate scores by voice:</p>
+              <DictateButton onRecordingComplete={handleDictationComplete} />
+              {isDictating && <p className="processing-text">Processing audio...</p>}
+              {dictationError && <p className="error-text">Error: {dictationError}</p>}
+            </div>
+          )}
+        </div>
       ) : (
         <>
           <TeamInput 
@@ -120,10 +153,16 @@ function App() {
             <button onClick={addTeam} className="add-team">&#43;</button>
             <button onClick={removeTeam} className="remove-team">&#8722;</button>
           </div>
-          <DictateButton onRecordingComplete={(blob) => {
-            console.log('Recording complete:', blob.type, blob.size, 'bytes');
-          }} />
-          <button onClick={rankTeams}>Rank Teams</button>
+          {currentRound === 1 && (
+            <>
+              <DictateButton onRecordingComplete={handleDictationComplete} />
+              {isDictating && <p className="processing-text">Processing audio...</p>}
+              {dictationError && <p className="error-text">Error: {dictationError}</p>}
+            </>
+          )}
+          <button onClick={rankTeams} disabled={isDictating}>
+            {isDictating ? 'Processing...' : 'Rank Teams'}
+          </button>
             {currentRound === 1 && round1Rankings.length > 0 && (
               <button onClick={startRound2}>Start Round 2</button>
             )}
