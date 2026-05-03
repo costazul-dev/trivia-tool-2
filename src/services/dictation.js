@@ -9,6 +9,9 @@ export async function processDictation(audioBlob, round, existingTeams) {
   const ext = extensionForMime(audioBlob.type);
   const formData = new FormData();
   formData.append('audio', audioBlob, `recording.${ext}`);
+  if (existingTeams && existingTeams.length > 0) {
+    formData.append('teamNames', existingTeams.join(','));
+  }
 
   const transcribeRes = await fetch('/api/transcribe', {
     method: 'POST',
