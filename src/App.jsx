@@ -21,7 +21,7 @@ function App() {
     setIsDictating(true);
     setDictationError(null);
     try {
-      const results = await processDictation(audioBlob, currentRound, []);
+      const results = await processDictation(audioBlob, currentRound, teams.map(t => t.name).filter(Boolean));
       const newTeams = results.map(({ name, score }) => ({
         name,
         round1: String(score),

@@ -22,10 +22,13 @@ router.post("/", upload.single("audio"), async (req, res) => {
       type: req.file.mimetype,
     });
 
-    const { text } = await getClient().audio.transcriptions.create({
-      model: "whisper-1",
-      file,
-    });
+    const teamNames = req.body.teamNames;
+    const transcriptionParams = { model: "whisper-1", file };
+    if (teamNames) {
+      transcriptionParams.prompt = `Teams: ${teamNames}`;
+    }
+
+    const { text } = await getClient().audio.transcriptions.create(transcriptionParams);
 
     console.log("[transcribe] Result:", text);
     res.json({ transcript: text });
