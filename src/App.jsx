@@ -16,10 +16,12 @@ function App() {
   const [setupComplete, setSetupComplete] = useState(false);
   const [isDictating, setIsDictating] = useState(false);
   const [dictationError, setDictationError] = useState(null);
+  const [dictationWarning, setDictationWarning] = useState(null);
 
   const handleDictationComplete = async (audioBlob) => {
     setIsDictating(true);
     setDictationError(null);
+    setDictationWarning(null);
     try {
       const results = await processDictation(audioBlob, currentRound, teams.map(t => t.name).filter(Boolean));
       const newTeams = results.map(({ name, score }) => ({
@@ -29,6 +31,39 @@ function App() {
       }));
       setTeams(newTeams);
       setSetupComplete(true);
+    } catch (err) {
+      console.error('Dictation failed:', err);
+      setDictationError(err.message);
+    } finally {
+      setIsDictating(false);
+    }
+  };
+
+  const handleRound2DictationComplete = async (audioBlob) => {
+    setIsDictating(true);
+    setDictationError(null);
+    setDictationWarning(null);
+    try {
+      const existingTeamNames = teams.map(t => t.name).filter(Boolean);
+      const results = await processDictation(audioBlob, 2, existingTeamNames);
+      const updatedTeams = [...teams];
+      const unmatched = [];
+      for (const { name, score } of results) {
+        let idx = updatedTeams.findIndex(t => t.name === name);
+        if (idx === -1) {
+          idx = updatedTeams.findIndex(t => t.name.toLowerCase() === name.toLowerCase());
+        }
+        if (idx !== -1) {
+          updatedTeams[idx] = { ...updatedTeams[idx], round2: String(score) };
+        } else {
+          console.warn(`Round 2 dictation: no match found for "${name}"`);
+          unmatched.push(name);
+        }
+      }
+      setTeams(updatedTeams);
+      if (unmatched.length > 0) {
+        setDictationWarning(`No match found for: ${unmatched.join(', ')}`);
+      }
     } catch (err) {
       console.error('Dictation failed:', err);
       setDictationError(err.message);
@@ -158,6 +193,14 @@ function App() {
               <DictateButton onRecordingComplete={handleDictationComplete} />
               {isDictating && <p className="processing-text">Processing audio...</p>}
               {dictationError && <p className="error-text">Error: {dictationError}</p>}
+            </>
+          )}
+          {currentRound === 2 && (
+            <>
+              <DictateButton onRecordingComplete={handleRound2DictationComplete} />
+              {isDictating && <p className="processing-text">Processing audio...</p>}
+              {dictationError && <p className="error-text">Error: {dictationError}</p>}
+              {dictationWarning && <p className="warning-text">Warning: {dictationWarning}</p>}
             </>
           )}
           <button onClick={rankTeams} disabled={isDictating}>
