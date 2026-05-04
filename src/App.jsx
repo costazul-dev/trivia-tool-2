@@ -62,7 +62,7 @@ function App() {
       }
       setTeams(updatedTeams);
       if (unmatched.length > 0) {
-        setDictationWarning(`No match found for: ${unmatched.join(', ')}`);
+        setDictationWarning(`Could not match: ${unmatched.join(', ')}. Enter their scores manually.`);
       }
     } catch (err) {
       console.error('Dictation failed:', err);
@@ -171,17 +171,34 @@ function App() {
           {currentRound === 1 && (
             <div className="dictate-section">
               <p>Or dictate scores by voice:</p>
-              <DictateButton onRecordingComplete={handleDictationComplete} />
+              {dictationError && (
+                <div className="dictation-banner dictation-banner--error">
+                  <span>{dictationError}</span>
+                  <button className="dictation-banner__close" onClick={() => setDictationError(null)} aria-label="Dismiss">×</button>
+                </div>
+              )}
+              <DictateButton onRecordingComplete={handleDictationComplete} onError={setDictationError} />
               {isDictating && <p className="processing-text">Processing audio...</p>}
-              {dictationError && <p className="error-text">Error: {dictationError}</p>}
             </div>
           )}
         </div>
       ) : (
         <>
-          <TeamInput 
-            teams={teams} 
-            updateTeam={updateTeam} 
+          {dictationError && (
+            <div className="dictation-banner dictation-banner--error">
+              <span>{dictationError}</span>
+              <button className="dictation-banner__close" onClick={() => setDictationError(null)} aria-label="Dismiss">×</button>
+            </div>
+          )}
+          {dictationWarning && (
+            <div className="dictation-banner dictation-banner--warning">
+              <span>{dictationWarning}</span>
+              <button className="dictation-banner__close" onClick={() => setDictationWarning(null)} aria-label="Dismiss">×</button>
+            </div>
+          )}
+          <TeamInput
+            teams={teams}
+            updateTeam={updateTeam}
             currentRound={currentRound}
           />
           <div className="team-control-buttons">
@@ -190,17 +207,14 @@ function App() {
           </div>
           {currentRound === 1 && (
             <>
-              <DictateButton onRecordingComplete={handleDictationComplete} />
+              <DictateButton onRecordingComplete={handleDictationComplete} onError={setDictationError} />
               {isDictating && <p className="processing-text">Processing audio...</p>}
-              {dictationError && <p className="error-text">Error: {dictationError}</p>}
             </>
           )}
           {currentRound === 2 && (
             <>
-              <DictateButton onRecordingComplete={handleRound2DictationComplete} />
+              <DictateButton onRecordingComplete={handleRound2DictationComplete} onError={setDictationError} />
               {isDictating && <p className="processing-text">Processing audio...</p>}
-              {dictationError && <p className="error-text">Error: {dictationError}</p>}
-              {dictationWarning && <p className="warning-text">Warning: {dictationWarning}</p>}
             </>
           )}
           <button onClick={rankTeams} disabled={isDictating}>

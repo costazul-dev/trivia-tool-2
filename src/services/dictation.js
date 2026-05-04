@@ -19,8 +19,8 @@ export async function processDictation(audioBlob, round, existingTeams) {
   });
 
   if (!transcribeRes.ok) {
-    const err = await transcribeRes.json().catch(() => ({}));
-    throw new Error(err.error || `Transcription failed (HTTP ${transcribeRes.status})`);
+    await transcribeRes.json().catch(() => ({}));
+    throw new Error('Transcription failed. Check your internet connection and try again.');
   }
 
   const { transcript } = await transcribeRes.json();
@@ -35,11 +35,16 @@ export async function processDictation(audioBlob, round, existingTeams) {
   });
 
   if (!parseRes.ok) {
-    const err = await parseRes.json().catch(() => ({}));
-    throw new Error(err.error || 'Parsing failed');
+    await parseRes.json().catch(() => ({}));
+    throw new Error('Could not parse the transcript. Try dictating again more slowly.');
   }
 
   const parsed = await parseRes.json();
   console.log('[dictation] Parsed results:', parsed);
+
+  if (!Array.isArray(parsed) || parsed.length === 0) {
+    throw new Error('No teams or scores detected. Make sure to say each team name followed by their score.');
+  }
+
   return parsed;
 }
