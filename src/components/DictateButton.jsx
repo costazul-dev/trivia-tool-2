@@ -8,7 +8,7 @@ function getSupportedMimeType() {
   return '';
 }
 
-function DictateButton({ onRecordingComplete }) {
+function DictateButton({ onRecordingComplete, onError }) {
   const [state, setState] = useState('idle'); // 'idle' | 'recording' | 'processing'
   const [elapsed, setElapsed] = useState(0);
   const mediaRecorderRef = useRef(null);
@@ -66,6 +66,7 @@ function DictateButton({ onRecordingComplete }) {
       setState('recording');
     } catch (err) {
       console.error('Microphone access denied:', err);
+      if (onError) onError('Microphone access denied. Check your browser permissions.');
     }
   };
 
