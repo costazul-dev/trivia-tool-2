@@ -23,13 +23,16 @@ function App() {
     setDictationError(null);
     setDictationWarning(null);
     try {
-      const results = await processDictation(audioBlob, currentRound, teams.map(t => t.name).filter(Boolean));
-      const newTeams = results.map(({ name, score }) => ({
-        name,
-        round1: String(score),
-        round2: '',
-      }));
-      setTeams(newTeams);
+      const existingTeamNames = teams.map(t => t.name).filter(Boolean);
+      const results = await processDictation(audioBlob, currentRound, existingTeamNames);
+      const netNewTeams = results
+        .filter(({ name }) => !existingTeamNames.some(n => n.toLowerCase() === name.toLowerCase()))
+        .map(({ name, score }) => ({
+          name,
+          round1: String(score),
+          round2: '',
+        }));
+      setTeams([...teams, ...netNewTeams]);
       setSetupComplete(true);
     } catch (err) {
       console.error('Dictation failed:', err);
