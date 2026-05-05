@@ -25,15 +25,24 @@ function App() {
     try {
       const existingTeamNames = teams.map(t => t.name).filter(Boolean);
       const results = await processDictation(audioBlob, currentRound, existingTeamNames);
-      const netNewTeams = results
-        .filter(({ name }) => !existingTeamNames.some(n => n.toLowerCase() === name.toLowerCase()))
-        .map(({ name, score }) => ({
-          name,
-          round1: String(score),
-          round2: '',
-        }));
+      const conflicts = [];
+      const netNewTeams = [];
+      for (const { name, score } of results) {
+        const existing = teams.find(t => t.name.toLowerCase() === name.toLowerCase());
+        if (existing) {
+          if (String(score) !== existing.round1) {
+            conflicts.push({ name: existing.name, existing: existing.round1, incoming: String(score) });
+          }
+        } else {
+          netNewTeams.push({ name, round1: String(score), round2: '' });
+        }
+      }
       setTeams([...teams, ...netNewTeams]);
       setSetupComplete(true);
+      if (conflicts.length > 0) {
+        const details = conflicts.map(c => `${c.name}: stored ${c.existing}, dictated ${c.incoming}`).join('; ');
+        setDictationWarning(`Score conflict — enter scores manually to resolve: ${details}`);
+      }
     } catch (err) {
       console.error('Dictation failed:', err);
       setDictationError(err.message);
@@ -51,21 +60,35 @@ function App() {
       const results = await processDictation(audioBlob, 2, existingTeamNames);
       const updatedTeams = [...teams];
       const unmatched = [];
+      const conflicts = [];
       for (const { name, score } of results) {
         let idx = updatedTeams.findIndex(t => t.name === name);
         if (idx === -1) {
           idx = updatedTeams.findIndex(t => t.name.toLowerCase() === name.toLowerCase());
         }
         if (idx !== -1) {
-          updatedTeams[idx] = { ...updatedTeams[idx], round2: String(score) };
+          const existing = updatedTeams[idx].round2;
+          if (existing && existing !== '' && existing !== String(score)) {
+            conflicts.push({ name: updatedTeams[idx].name, existing, incoming: String(score) });
+          } else {
+            updatedTeams[idx] = { ...updatedTeams[idx], round2: String(score) };
+          }
         } else {
           console.warn(`Round 2 dictation: no match found for "${name}"`);
           unmatched.push(name);
         }
       }
       setTeams(updatedTeams);
+      const warnings = [];
       if (unmatched.length > 0) {
-        setDictationWarning(`Could not match: ${unmatched.join(', ')}. Enter their scores manually.`);
+        warnings.push(`Could not match: ${unmatched.join(', ')}. Enter their scores manually.`);
+      }
+      if (conflicts.length > 0) {
+        const details = conflicts.map(c => `${c.name}: stored ${c.existing}, dictated ${c.incoming}`).join('; ');
+        warnings.push(`Score conflict — enter scores manually to resolve: ${details}`);
+      }
+      if (warnings.length > 0) {
+        setDictationWarning(warnings.join(' | '));
       }
     } catch (err) {
       console.error('Dictation failed:', err);
