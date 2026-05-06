@@ -15,8 +15,8 @@ function InitialTeamSetup({ onSetupComplete }) {
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      <label htmlFor="numberOfTeams">Number of Teams: </label>
+    <form className="setup-form" onSubmit={handleSubmit}>
+      <label htmlFor="numberOfTeams">Number of Teams</label>
       <input
         type="number"
         id="numberOfTeams"
