@@ -190,13 +190,15 @@ function App() {
 
   return (
     <div className="App">
-      <h1>trivia-tool-2 v1.2 🎙️</h1>
+      <h1>Trivia Tool</h1>
+      <p className="app-subtitle">Score Manager v1.2 &nbsp;·&nbsp; Round {currentRound}</p>
+
       {!setupComplete ? (
         <div>
           <InitialTeamSetup onSetupComplete={setupInitialTeams} />
           {currentRound === 1 && (
             <div className="dictate-section">
-              <p>Or dictate scores by voice:</p>
+              <p>Or dictate scores by voice</p>
               {dictationError && (
                 <div className="dictation-banner dictation-banner--error">
                   <span>{dictationError}</span>
@@ -204,7 +206,7 @@ function App() {
                 </div>
               )}
               <DictateButton onRecordingComplete={handleDictationComplete} onError={setDictationError} />
-              {isDictating && <p className="processing-text">Processing audio...</p>}
+              {isDictating && <p className="processing-text">Processing audio…</p>}
             </div>
           )}
         </div>
@@ -222,45 +224,54 @@ function App() {
               <button className="dictation-banner__close" onClick={() => setDictationWarning(null)} aria-label="Dismiss">×</button>
             </div>
           )}
+
           <TeamInput
             teams={teams}
             updateTeam={updateTeam}
             currentRound={currentRound}
           />
+
           <div className="team-control-buttons">
-            <button onClick={addTeam} className="add-team">&#43;</button>
-            <button onClick={removeTeam} className="remove-team">&#8722;</button>
+            <button onClick={addTeam} className="add-team" title="Add team">&#43;</button>
+            <button onClick={removeTeam} className="remove-team" title="Remove team">&#8722;</button>
           </div>
+
           {currentRound === 1 && (
-            <>
+            <div className="dictate-section">
+              <p>Dictate scores by voice</p>
               <DictateButton onRecordingComplete={handleDictationComplete} onError={setDictationError} />
-              {isDictating && <p className="processing-text">Processing audio...</p>}
-            </>
+              {isDictating && <p className="processing-text">Processing audio…</p>}
+            </div>
           )}
           {currentRound === 2 && (
-            <>
+            <div className="dictate-section">
+              <p>Dictate round 2 scores by voice</p>
               <DictateButton onRecordingComplete={handleRound2DictationComplete} onError={setDictationError} />
-              {isDictating && <p className="processing-text">Processing audio...</p>}
-            </>
+              {isDictating && <p className="processing-text">Processing audio…</p>}
+            </div>
           )}
-          <button onClick={rankTeams} disabled={isDictating}>
-            {isDictating ? 'Processing...' : 'Rank Teams'}
-          </button>
+
+          <div>
+            <button className="btn-primary" onClick={rankTeams} disabled={isDictating}>
+              {isDictating ? 'Processing…' : 'Rank Teams'}
+            </button>
             {currentRound === 1 && round1Rankings.length > 0 && (
-              <button onClick={startRound2}>Start Round 2</button>
+              <button className="btn-primary" onClick={startRound2}>Start Round 2</button>
             )}
-            {(round1Rankings.length > 0 || round2Rankings.length > 0) && (
+          </div>
+
+          {(round1Rankings.length > 0 || round2Rankings.length > 0) && (
             <>
-                <RankingList
-                  round1Rankings={round1Rankings}
-                  round2Rankings={round2Rankings}
-                  currentRound={currentRound}
-                />
-                <DownloadCSV
-                  round1Data={round1Rankings}
-                  round2Data={round2Rankings}
-                  currentRound={currentRound}
-                />
+              <RankingList
+                round1Rankings={round1Rankings}
+                round2Rankings={round2Rankings}
+                currentRound={currentRound}
+              />
+              <DownloadCSV
+                round1Data={round1Rankings}
+                round2Data={round2Rankings}
+                currentRound={currentRound}
+              />
             </>
           )}
         </>

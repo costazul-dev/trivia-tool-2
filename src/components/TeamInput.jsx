@@ -3,9 +3,9 @@ import React from 'react';
 
 function TeamInput({ teams, updateTeam, currentRound }) {
   return (
-    <div>
+    <div className="team-rows">
       {teams.map((team, index) => (
-        <div key={index}>
+        <div key={index} className="team-row">
           <input
             type="text"
             placeholder="Team Name"
@@ -15,7 +15,7 @@ function TeamInput({ teams, updateTeam, currentRound }) {
           <input
             type="number"
             step="0.1"
-            placeholder="Round 1 Score"
+            placeholder="R1"
             value={team.round1}
             onChange={(e) => updateTeam(index, 'round1', e.target.value)}
             disabled={currentRound !== 1}
@@ -24,7 +24,7 @@ function TeamInput({ teams, updateTeam, currentRound }) {
             <input
               type="number"
               step="0.1"
-              placeholder="Round 2 Score"
+              placeholder="R2"
               value={team.round2}
               onChange={(e) => updateTeam(index, 'round2', e.target.value)}
             />
